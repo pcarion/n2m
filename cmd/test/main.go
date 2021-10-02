@@ -21,10 +21,11 @@ func main() {
 		os.Exit(1)
 	}
 
-	err = cms.ExtractListPages("8ebca155ffda45f7b5d49b0892672dea")
+	pages, err := cms.ExtractListPages("8ebca155ffda45f7b5d49b0892672dea")
 
 	if err != nil {
 		fmt.Printf("error: %v\n", err)
 		os.Exit(1)
 	}
+	fmt.Printf("Pages: \n%#v", pages)
 }
