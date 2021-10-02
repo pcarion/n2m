@@ -27,5 +27,16 @@ func main() {
 		fmt.Printf("error: %v\n", err)
 		os.Exit(1)
 	}
-	fmt.Printf("Pages: \n%#v", pages)
+	fmt.Printf("Pages: \n%#v\n\n", pages)
+
+	for ix, page := range pages {
+		if ix != 0 {
+			continue
+		}
+		err = cms.ConvertPageToMarkdown(page.Id)
+		if err != nil {
+			fmt.Printf("error: %v\n", err)
+			os.Exit(1)
+		}
+	}
 }
