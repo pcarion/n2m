@@ -2,7 +2,6 @@ package blogcms
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"os"
 
@@ -15,23 +14,31 @@ func (cms *Blogcms) ConvertPageToMarkdown(pageId string) error {
 	if err != nil {
 		return err
 	}
+	var metaData *MetaDataInformation
 
 	// https://developers.notion.com/changelog/api-support-for-code-blocks-and-inline-databases
 	for _, b := range block.Results {
-		if b.GetType().String() == "child_database" {
-			metaData, err := cms.extractMetaData(b)
+		switch b.GetType().String() {
+		case "child_database":
+			// meta information
+			metaData, err = cms.extractMetaData(b)
 			if err != nil {
 				return err
 			}
 			fmt.Printf(">metaData>%#v\n", metaData)
+
+		case "paragraph":
+			paragraph, err := cms.parseParagraph(b)
+			if err != nil {
+				fmt.Printf("error: %v\n", err)
+				os.Exit(1)
+			}
+			fmt.Printf(">paragraph>%s>\n\n%v\n\n", b.GetType().String(), paragraph)
+
+		default:
+			return fmt.Errorf("block type parsing not implemented for:%s", b.GetType().String())
 		}
 	}
 
-	blockData, err := json.Marshal(block)
-	if err != nil {
-		fmt.Printf("error: %v\n", err)
-		os.Exit(1)
-	}
-	fmt.Printf("blockData: \n\n%s\n\n", string(blockData))
 	return nil
 }
