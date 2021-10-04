@@ -10,6 +10,7 @@ import (
 
 func (cms *Blogcms) ConvertPageToMarkdown(pageId string) error {
 	var metaData *MetaDataInformation
+	var err error
 
 	fmt.Printf("ConvertPageToMarkdown: pageId=%s\n", pageId)
 	cms.visitBlockChildren(pageId, func(blocks []notionapi.Block) error {
@@ -18,7 +19,7 @@ func (cms *Blogcms) ConvertPageToMarkdown(pageId string) error {
 			switch b.GetType().String() {
 			case "child_database":
 				// meta information
-				metaData, err := cms.extractMetaData(b)
+				metaData, err = cms.extractMetaData(b)
 				if err != nil {
 					return err
 				}
