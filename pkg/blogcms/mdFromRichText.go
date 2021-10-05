@@ -1,14 +1,8 @@
 package blogcms
 
 import (
-	"fmt"
-
 	"github.com/jomei/notionapi"
 )
-
-type MarkdownParagraph struct {
-	Markdown string
-}
 
 func parseAnnotations(annotations *notionapi.Annotations) (string, string) {
 	if annotations == nil {
@@ -40,16 +34,15 @@ func parseAnnotations(annotations *notionapi.Annotations) (string, string) {
 	return prefix, suffix
 }
 
-func (cms *Blogcms) parseParagraph(block notionapi.Block) (*MarkdownParagraph, error) {
-	paragraphBlock := block.(*notionapi.ParagraphBlock)
-	fmt.Printf(">>paragraph block>%#v\n", paragraphBlock)
+func (cms *Blogcms) mdFromRichText(richText notionapi.RichText) string {
+	prefix, suffix := parseAnnotations(richText.Annotations)
+	return prefix + richText.PlainText + suffix
+}
 
+func (cms *Blogcms) mdFromRichTexts(richTexts []notionapi.RichText) string {
 	var md = ""
-	for _, richText := range paragraphBlock.Paragraph.Text {
-		prefix, suffix := parseAnnotations(richText.Annotations)
-		md = md + prefix + richText.PlainText + suffix
+	for _, richText := range richTexts {
+		md = md + cms.mdFromRichText(richText)
 	}
-	return &MarkdownParagraph{
-		Markdown: md,
-	}, nil
+	return md
 }

@@ -26,7 +26,7 @@ func (cms *Blogcms) ConvertPageToMarkdown(pageId string) error {
 				fmt.Printf(">metaData>%#v\n", metaData)
 
 			case "paragraph":
-				paragraph, err := cms.parseParagraph(b)
+				paragraph, err := cms.parseParagraphBlock(b)
 				if err != nil {
 					fmt.Printf("error: %v\n", err)
 					os.Exit(1)
@@ -34,12 +34,12 @@ func (cms *Blogcms) ConvertPageToMarkdown(pageId string) error {
 				fmt.Printf(">paragraph>%s>\n\n%v\n\n", b.GetType().String(), paragraph)
 
 			case "bulleted_list_item":
-				blockData, err := json.Marshal(b)
+				paragraph, err := cms.parseBulletedListItemBlock(b)
 				if err != nil {
 					fmt.Printf("error: %v\n", err)
 					os.Exit(1)
 				}
-				fmt.Printf("blockData:%s \n\n%s\n\n", b.GetType().String(), string(blockData))
+				fmt.Printf(">paragraph (bulleted)>%s>\n\n%v\n\n", b.GetType().String(), paragraph)
 
 			default:
 				blockData, err := json.Marshal(b)
