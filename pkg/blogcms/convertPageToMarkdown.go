@@ -41,6 +41,14 @@ func (cms *Blogcms) ConvertPageToMarkdown(pageId string) error {
 				}
 				fmt.Printf(">paragraph (bulleted)>%s>\n\n%v\n\n", b.GetType().String(), paragraph)
 
+			case "image":
+				paragraph, err := cms.parseImageBlock(b)
+				if err != nil {
+					fmt.Printf("error: %v\n", err)
+					os.Exit(1)
+				}
+				fmt.Printf(">paragraph (image)>%s>\n\n%v\n\n", b.GetType().String(), paragraph)
+
 			default:
 				blockData, err := json.Marshal(b)
 				if err != nil {
