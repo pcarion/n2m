@@ -1,5 +1,5 @@
 build:
-	go build -o bin/test cmd/test/main.go
+	go build -o bin/n2b cmd/n2b/main.go
 
 run:
-	go run cmd/test/main.go
+	go run cmd/n2b/main.go
