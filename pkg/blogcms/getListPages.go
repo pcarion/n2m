@@ -9,7 +9,7 @@ type CmsPageDescription struct {
 	Title string
 }
 
-func (cms *Blogcms) ExtractListPages(pageId string) ([]CmsPageDescription, error) {
+func (cms *Blogcms) extractListPages(pageId string) ([]CmsPageDescription, error) {
 	result := make([]CmsPageDescription, 0, 10)
 
 	cms.visitBlockChildren(pageId, func(blocks []notionapi.Block) error {

@@ -9,8 +9,8 @@ import (
 )
 
 type JsonConfig struct {
-	RootPageId         string `json:"rootPageId"`
-	DebugOnlyPageIndex int    `json:"debugOnlyPageIndex"`
+	RootPageId      string `json:"rootPageId"`
+	OutputDirectory string `json:"outputDirectory"`
 }
 
 func parseJSONConfig() (*JsonConfig, error) {
@@ -43,22 +43,9 @@ func main() {
 		os.Exit(1)
 	}
 
-	pages, err := cms.ExtractListPages(config.RootPageId)
-
+	err = cms.GenerateContent(config.RootPageId, config.OutputDirectory)
 	if err != nil {
 		fmt.Printf("error: %v\n", err)
 		os.Exit(1)
 	}
-
-	for ix, page := range pages {
-		if ix != config.DebugOnlyPageIndex-1 {
-			continue
-		}
-		err = cms.ConvertPageToMarkdown(page.Id)
-		if err != nil {
-			fmt.Printf("error: %v\n", err)
-			os.Exit(1)
-		}
-	}
-
 }
