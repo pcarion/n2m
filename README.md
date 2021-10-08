@@ -1,10 +1,9 @@
-# gonotionapi
+# n2m
 go implementation of the notion API
 
 List of blocks for API:
 
 https://developers.notion.com/reference/block
-
 
 to debug and use local version of library, add in `go.mod`:
 
