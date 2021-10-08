@@ -1,4 +1,4 @@
-package blogcms
+package n2m
 
 import (
 	"context"
@@ -19,7 +19,7 @@ type MetaDataInformation struct {
 	Excerpt string
 }
 
-func (cms *Blogcms) extractMetaData(block notionapi.Block) (*MetaDataInformation, error) {
+func (cms *Notion2Markdown) extractMetaData(block notionapi.Block) (*MetaDataInformation, error) {
 	childDatabase := block.(*notionapi.ChildDatabaseBlock)
 	database, err := cms.client.Database.Query(context.Background(), notionapi.DatabaseID(childDatabase.ID), nil)
 	if err != nil {

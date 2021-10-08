@@ -1,4 +1,4 @@
-package blogcms
+package n2m
 
 import (
 	"github.com/jomei/notionapi"
@@ -9,7 +9,7 @@ type CmsPageDescription struct {
 	Title string
 }
 
-func (cms *Blogcms) extractListPages(pageId string) ([]CmsPageDescription, error) {
+func (cms *Notion2Markdown) extractListPages(pageId string) ([]CmsPageDescription, error) {
 	result := make([]CmsPageDescription, 0, 10)
 
 	cms.visitBlockChildren(pageId, func(blocks []notionapi.Block) error {

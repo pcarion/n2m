@@ -1,4 +1,4 @@
-package blogcms
+package n2m
 
 import (
 	"encoding/json"
@@ -8,7 +8,7 @@ import (
 	"github.com/jomei/notionapi"
 )
 
-func (cms *Blogcms) ConvertPageToMarkdown(pageId string) error {
+func (cms *Notion2Markdown) ConvertPageToMarkdown(pageId string) error {
 	var metaData *MetaDataInformation
 	var err error
 

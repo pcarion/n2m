@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/pcarion/gonotionapi/pkg/blogcms"
+	"github.com/pcarion/gonotionapi/pkg/n2m"
 )
 
 type JsonConfig struct {
@@ -37,7 +37,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	cms, err := blogcms.NewBlocgCms(notionIntegrationToken)
+	cms, err := n2m.NewNotionToMarkdown(notionIntegrationToken)
 	if err != nil {
 		fmt.Printf("error: %v\n", err)
 		os.Exit(1)

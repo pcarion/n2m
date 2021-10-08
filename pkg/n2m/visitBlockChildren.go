@@ -1,4 +1,4 @@
-package blogcms
+package n2m
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 
 type BlockChildrenVisitor func([]notionapi.Block) error
 
-func (cms *Blogcms) visitBlockChildren(pageId string, visitor BlockChildrenVisitor) error {
+func (cms *Notion2Markdown) visitBlockChildren(pageId string, visitor BlockChildrenVisitor) error {
 	var pagination = notionapi.Pagination{
 		PageSize: 10,
 	}

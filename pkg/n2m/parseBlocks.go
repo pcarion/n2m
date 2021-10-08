@@ -1,4 +1,4 @@
-package blogcms
+package n2m
 
 import (
 	"github.com/jomei/notionapi"
@@ -8,7 +8,7 @@ type MarkdownParagraph struct {
 	Markdown string
 }
 
-func (cms *Blogcms) parseParagraphBlock(block notionapi.Block) (*MarkdownParagraph, error) {
+func (cms *Notion2Markdown) parseParagraphBlock(block notionapi.Block) (*MarkdownParagraph, error) {
 	paragraphBlock := block.(*notionapi.ParagraphBlock)
 
 	md := cms.mdFromRichTexts(paragraphBlock.Paragraph.Text)
@@ -17,7 +17,7 @@ func (cms *Blogcms) parseParagraphBlock(block notionapi.Block) (*MarkdownParagra
 	}, nil
 }
 
-func (cms *Blogcms) parseBulletedListItemBlock(block notionapi.Block) (*MarkdownParagraph, error) {
+func (cms *Notion2Markdown) parseBulletedListItemBlock(block notionapi.Block) (*MarkdownParagraph, error) {
 	bulletedListItemBlock := block.(*notionapi.BulletedListItemBlock)
 	listItem := bulletedListItemBlock.BulletedListItem
 	md := cms.mdFromRichTexts(listItem.Text)

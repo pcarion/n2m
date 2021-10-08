@@ -1,22 +1,27 @@
-package blogcms
+package n2m
 
 import (
 	"github.com/jomei/notionapi"
 )
 
-type Blogcms struct {
+type Notion2Markdown struct {
 	client *notionapi.Client
 }
 
-func NewBlocgCms(notionIntegrationToken string) (*Blogcms, error) {
+func NewNotionToMarkdown(notionIntegrationToken string) (*Notion2Markdown, error) {
 	client := notionapi.NewClient(notionapi.Token(notionIntegrationToken))
 
-	return &Blogcms{
+	return &Notion2Markdown{
 		client: client,
 	}, nil
 }
 
-func (cms *Blogcms) GenerateContent(rootPageId string, outputDirectory string) error {
+func (cms *Notion2Markdown) GenerateContent(rootPageId string, outputDirectory string) error {
+	// create result directory
+	err := ensureDir(outputDirectory)
+	if err != nil {
+		return err
+	}
 	pages, err := cms.extractListPages(rootPageId)
 
 	if err != nil {

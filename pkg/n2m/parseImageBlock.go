@@ -1,4 +1,4 @@
-package blogcms
+package n2m
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"github.com/jomei/notionapi"
 )
 
-func (cms *Blogcms) parseImageBlock(block notionapi.Block) (*MarkdownParagraph, error) {
+func (cms *Notion2Markdown) parseImageBlock(block notionapi.Block) (*MarkdownParagraph, error) {
 	imageBlock := block.(*notionapi.ImageBlock)
 	image := imageBlock.Image
 

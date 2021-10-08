@@ -1,4 +1,4 @@
-package blogcms
+package n2m
 
 import (
 	"github.com/jomei/notionapi"
@@ -34,12 +34,12 @@ func parseAnnotations(annotations *notionapi.Annotations) (string, string) {
 	return prefix, suffix
 }
 
-func (cms *Blogcms) mdFromRichText(richText notionapi.RichText) string {
+func (cms *Notion2Markdown) mdFromRichText(richText notionapi.RichText) string {
 	prefix, suffix := parseAnnotations(richText.Annotations)
 	return prefix + richText.PlainText + suffix
 }
 
-func (cms *Blogcms) mdFromRichTexts(richTexts []notionapi.RichText) string {
+func (cms *Notion2Markdown) mdFromRichTexts(richTexts []notionapi.RichText) string {
 	var md = ""
 	for _, richText := range richTexts {
 		md = md + cms.mdFromRichText(richText)
