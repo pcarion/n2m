@@ -14,7 +14,7 @@ type JsonConfig struct {
 }
 
 func parseJSONConfig() (*JsonConfig, error) {
-	content, err := os.ReadFile("n2b.json")
+	content, err := os.ReadFile("n2m.json")
 	if err != nil {
 		return nil, err
 	}
