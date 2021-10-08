@@ -16,7 +16,7 @@ func NewNotionToMarkdown(notionIntegrationToken string) (*Notion2Markdown, error
 	}, nil
 }
 
-func (cms *Notion2Markdown) GenerateContent(rootPageId string, outputDirectory string) error {
+func (cms *Notion2Markdown) GenerateMardown(rootPageId string, outputDirectory string) error {
 	// create result directory
 	err := ensureDir(outputDirectory)
 	if err != nil {
@@ -33,7 +33,7 @@ func (cms *Notion2Markdown) GenerateContent(rootPageId string, outputDirectory s
 		if ix != 0 {
 			continue
 		}
-		err = cms.ConvertPageToMarkdown(page.Id)
+		err = cms.ConvertPageToMarkdown(page.Id, outputDirectory)
 		if err != nil {
 			return err
 		}

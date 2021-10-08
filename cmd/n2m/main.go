@@ -43,7 +43,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	err = cms.GenerateContent(config.RootPageId, config.OutputDirectory)
+	err = cms.GenerateMardown(config.RootPageId, config.OutputDirectory)
 	if err != nil {
 		fmt.Printf("error: %v\n", err)
 		os.Exit(1)

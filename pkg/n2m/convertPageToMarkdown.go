@@ -8,8 +8,9 @@ import (
 	"github.com/jomei/notionapi"
 )
 
-func (cms *Notion2Markdown) ConvertPageToMarkdown(pageId string) error {
+func (cms *Notion2Markdown) ConvertPageToMarkdown(pageId string, outputDirectory string) error {
 	var metaData *MetaDataInformation
+	var lines []string = make([]string, 0, 20)
 	var err error
 
 	fmt.Printf("ConvertPageToMarkdown: pageId=%s\n", pageId)
@@ -32,6 +33,8 @@ func (cms *Notion2Markdown) ConvertPageToMarkdown(pageId string) error {
 					os.Exit(1)
 				}
 				fmt.Printf(">paragraph>%s>\n\n%v\n\n", b.GetType().String(), paragraph)
+				// get lines
+				lines = append(lines, paragraph.Markdown)
 
 			case "bulleted_list_item":
 				paragraph, err := cms.parseBulletedListItemBlock(b)
@@ -40,6 +43,8 @@ func (cms *Notion2Markdown) ConvertPageToMarkdown(pageId string) error {
 					os.Exit(1)
 				}
 				fmt.Printf(">paragraph (bulleted)>%s>\n\n%v\n\n", b.GetType().String(), paragraph)
+				// get lines
+				lines = append(lines, paragraph.Markdown)
 
 			case "image":
 				paragraph, err := cms.parseImageBlock(b)
