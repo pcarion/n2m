@@ -5,7 +5,7 @@ import (
 )
 
 type MarkdownParagraph struct {
-	Markdown string
+	markdown string
 }
 
 func (cms *Notion2Markdown) parseParagraphBlock(block notionapi.Block) (*MarkdownParagraph, error) {
@@ -13,7 +13,7 @@ func (cms *Notion2Markdown) parseParagraphBlock(block notionapi.Block) (*Markdow
 
 	md := cms.mdFromRichTexts(paragraphBlock.Paragraph.Text)
 	return &MarkdownParagraph{
-		Markdown: md,
+		markdown: md,
 	}, nil
 }
 
@@ -22,6 +22,6 @@ func (cms *Notion2Markdown) parseBulletedListItemBlock(block notionapi.Block) (*
 	listItem := bulletedListItemBlock.BulletedListItem
 	md := cms.mdFromRichTexts(listItem.Text)
 	return &MarkdownParagraph{
-		Markdown: "* " + md,
+		markdown: "* " + md,
 	}, nil
 }

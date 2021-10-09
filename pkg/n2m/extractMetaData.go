@@ -13,13 +13,14 @@ import (
 // https://developers.notion.com/reference/post-database-query
 
 type MetaDataInformation struct {
+	Title   string
 	Slug    string
 	Date    time.Time
 	Tags    []string
 	Excerpt string
 }
 
-func (cms *Notion2Markdown) extractMetaData(block notionapi.Block) (*MetaDataInformation, error) {
+func (cms *Notion2Markdown) extractMetaData(block notionapi.Block, pageTitle string) (*MetaDataInformation, error) {
 	childDatabase := block.(*notionapi.ChildDatabaseBlock)
 	database, err := cms.client.Database.Query(context.Background(), notionapi.DatabaseID(childDatabase.ID), nil)
 	if err != nil {
@@ -59,7 +60,9 @@ func (cms *Notion2Markdown) extractMetaData(block notionapi.Block) (*MetaDataInf
 		props[propName] = propValue
 	}
 
-	var medataData MetaDataInformation
+	var medataData = MetaDataInformation{
+		Title: pageTitle,
+	}
 	// check those properties
 	for propName, propValue := range props {
 		switch strings.ToLower(propName) {
