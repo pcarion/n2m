@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"os"
 
 	"github.com/jomei/notionapi"
 )
@@ -36,15 +35,18 @@ func (cms *Notion2Markdown) ConvertPageToMarkdown(pageId string, outputDirectory
 	}
 	pageTitle = getPageTitle(page)
 
-	fmt.Printf("ConvertPageToMarkdown: pageId=%s\n", pageId)
-	cms.visitBlockChildren(pageId, func(blocks []notionapi.Block) error {
+	fmt.Printf("ConvertPageToMarkdown: pageId=%s title=%s\n", pageId, pageTitle)
+	err = cms.visitBlockChildren(pageId, func(blocks []notionapi.Block) error {
+		fmt.Printf("@@@ in visitor [%d]... \n", len(blocks))
 		// https://developers.notion.com/changelog/api-support-for-code-blocks-and-inline-databases
 		for _, b := range blocks {
+			fmt.Printf("@@@ block [%s]... \n", b.GetType().String())
 			switch b.GetType().String() {
 			case "child_database":
 				// meta information
 				metaData, err = cms.extractMetaData(b, pageTitle)
 				if err != nil {
+					fmt.Printf("error: %v\n", err)
 					return err
 				}
 				fmt.Printf(">metaData>%#v\n", metaData)
@@ -53,7 +55,7 @@ func (cms *Notion2Markdown) ConvertPageToMarkdown(pageId string, outputDirectory
 				paragraph, err := cms.parseParagraphBlock(b)
 				if err != nil {
 					fmt.Printf("error: %v\n", err)
-					os.Exit(1)
+					return err
 				}
 				fmt.Printf(">paragraph>%s>\n\n%v\n\n", b.GetType().String(), paragraph)
 				// get lines
@@ -63,7 +65,7 @@ func (cms *Notion2Markdown) ConvertPageToMarkdown(pageId string, outputDirectory
 				paragraph, err := cms.parseBulletedListItemBlock(b)
 				if err != nil {
 					fmt.Printf("error: %v\n", err)
-					os.Exit(1)
+					return err
 				}
 				fmt.Printf(">paragraph (bulleted)>%s>\n\n%v\n\n", b.GetType().String(), paragraph)
 				// get lines
@@ -74,7 +76,7 @@ func (cms *Notion2Markdown) ConvertPageToMarkdown(pageId string, outputDirectory
 				paragraph, err := cms.parseImageBlock(b, metaData.Slug, imagesCount)
 				if err != nil {
 					fmt.Printf("error: %v\n", err)
-					os.Exit(1)
+					return err
 				}
 				fmt.Printf(">paragraph (image)>%s>\n\n%v\n\n", b.GetType().String(), paragraph)
 				// get lines
@@ -84,7 +86,7 @@ func (cms *Notion2Markdown) ConvertPageToMarkdown(pageId string, outputDirectory
 				blockData, err := json.Marshal(b)
 				if err != nil {
 					fmt.Printf("error: %v\n", err)
-					os.Exit(1)
+					return err
 				}
 				fmt.Printf("blockData:%s \n\n%s\n\n", b.GetType().String(), string(blockData))
 				return fmt.Errorf("block type parsing not implemented for:%s", b.GetType().String())
@@ -92,6 +94,11 @@ func (cms *Notion2Markdown) ConvertPageToMarkdown(pageId string, outputDirectory
 		}
 		return nil
 	})
+	// test result of "visitor"
+	if err != nil {
+		fmt.Printf("error: %v\n", err)
+		return err
+	}
 	fmt.Printf(">metaData>%#v\n", metaData)
 
 	// generate file

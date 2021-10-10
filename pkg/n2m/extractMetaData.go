@@ -3,6 +3,7 @@ package n2m
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -18,6 +19,7 @@ type MetaDataInformation struct {
 	Date    time.Time
 	Tags    []string
 	Excerpt string
+	IsDraft bool
 }
 
 func (cms *Notion2Markdown) extractMetaData(block notionapi.Block, pageTitle string) (*MetaDataInformation, error) {
@@ -26,6 +28,7 @@ func (cms *Notion2Markdown) extractMetaData(block notionapi.Block, pageTitle str
 	if err != nil {
 		return nil, err
 	}
+	logAsJson(database, "database")
 
 	// extract all the properties from the inline database block
 	props := map[string]string{}
@@ -83,6 +86,13 @@ func (cms *Notion2Markdown) extractMetaData(block notionapi.Block, pageTitle str
 			for _, tag := range tags {
 				medataData.Tags = append(medataData.Tags, strings.Trim(tag, " "))
 			}
+		case "draft":
+			b, err := strconv.ParseBool(propValue)
+			if err != nil {
+				return nil, fmt.Errorf("invalid boolean format (%s) in meta table", propValue)
+			}
+			medataData.IsDraft = b
+
 		default:
 			return nil, fmt.Errorf("invalid property name (%s) in meta table", propName)
 		}
