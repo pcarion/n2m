@@ -28,7 +28,6 @@ func (cms *Notion2Markdown) extractMetaData(block notionapi.Block, pageTitle str
 	if err != nil {
 		return nil, err
 	}
-	logAsJson(database, "database")
 
 	// extract all the properties from the inline database block
 	props := map[string]string{}

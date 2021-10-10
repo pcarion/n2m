@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 )
 
-func (cms *Notion2Markdown) writeMarkdownFile(outputDirectory string, metaData *MetaDataInformation, lines []string) error {
+func (cms *Notion2Markdown) writeMarkdownFile(outputDirectory string, metaData *MetaDataInformation, blocks []MarkdownBlock) error {
 	dir := filepath.Join(outputDirectory, metaData.Slug)
 	err := ensureDir(dir)
 	if err != nil {
@@ -37,9 +37,13 @@ func (cms *Notion2Markdown) writeMarkdownFile(outputDirectory string, metaData *
 		f.WriteString("draft: false\n")
 	}
 	f.WriteString("---\n\n")
-	for _, line := range lines {
-		f.WriteString(line)
-		f.WriteString("\n\n")
+	for ix, block := range blocks {
+		f.WriteString(block.markdown)
+		f.WriteString("\n")
+		// check if we need to add an extra line
+		if block.mdType != MdTypeListItem || (ix < len(blocks)-1 && blocks[ix+1].mdType != MdTypeListItem) {
+			f.WriteString("\n")
+		}
 	}
 	return nil
 }

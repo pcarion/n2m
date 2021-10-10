@@ -2,7 +2,6 @@ package n2m
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/jomei/notionapi"
 )
@@ -16,7 +15,6 @@ func (cms *Notion2Markdown) visitBlockChildren(pageId string, visitor BlockChild
 	var doContinueLoop = true
 	var returnError error = nil
 
-	fmt.Printf("@@@ loop\n")
 	for doContinueLoop {
 
 		block, err := cms.client.Block.GetChildren(context.Background(), notionapi.BlockID(pageId), &pagination)
@@ -29,7 +27,6 @@ func (cms *Notion2Markdown) visitBlockChildren(pageId string, visitor BlockChild
 		} else {
 			doContinueLoop = false
 		}
-		fmt.Printf("@@@ loop>visitor\n")
 		err = visitor(block.Results)
 		if err != nil {
 			returnError = err

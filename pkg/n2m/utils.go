@@ -13,7 +13,7 @@ func ensureDir(dirName string) error {
 	return err
 }
 
-func logAsJson(b interface{}, what string) {
+func LogAsJson(b interface{}, what string) {
 	blockData, err := json.Marshal(b)
 	if err != nil {
 		fmt.Printf("error: %v\n", err)

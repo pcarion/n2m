@@ -8,6 +8,21 @@ import (
 	"github.com/jomei/notionapi"
 )
 
+const (
+	MdTypePara = iota
+	MdTypeHeader
+	MdTypeImage
+	MdTypeListItem
+	MdTypeCode
+)
+
+// description of a generated markdown block
+type MarkdownBlock struct {
+	mdType   int
+	level    int
+	markdown string
+}
+
 func getPageTitle(page *notionapi.Page) string {
 	for _, prop := range page.Properties {
 		if prop.GetType() == "title" {
@@ -25,9 +40,17 @@ func getPageTitle(page *notionapi.Page) string {
 func (cms *Notion2Markdown) convertPageToMarkdown(pageId string, outputDirectory string) error {
 	var metaData *MetaDataInformation
 	var pageTitle = ""
-	var lines []string = make([]string, 0, 20)
+	var mdBlocks []MarkdownBlock = make([]MarkdownBlock, 0, 20)
 	var err error
 	var imagesCount = 0
+
+	var addLine = func(md string, mdType int, level int) {
+		mdBlocks = append(mdBlocks, MarkdownBlock{
+			mdType:   mdType,
+			level:    level,
+			markdown: md,
+		})
+	}
 
 	page, err := cms.client.Page.Get(context.Background(), notionapi.PageID(pageId))
 	if err != nil {
@@ -37,11 +60,11 @@ func (cms *Notion2Markdown) convertPageToMarkdown(pageId string, outputDirectory
 
 	fmt.Printf("ConvertPageToMarkdown: pageId=%s title=%s\n", pageId, pageTitle)
 	err = cms.visitBlockChildren(pageId, func(blocks []notionapi.Block) error {
-		fmt.Printf("@@@ in visitor [%d]... \n", len(blocks))
 		// https://developers.notion.com/changelog/api-support-for-code-blocks-and-inline-databases
 		for _, b := range blocks {
-			fmt.Printf("@@@ block [%s]... \n", b.GetType().String())
-			switch b.GetType().String() {
+			var blockType = b.GetType().String()
+
+			switch blockType {
 			case "child_database":
 				// meta information
 				metaData, err = cms.extractMetaData(b, pageTitle)
@@ -57,9 +80,9 @@ func (cms *Notion2Markdown) convertPageToMarkdown(pageId string, outputDirectory
 					fmt.Printf("error: %v\n", err)
 					return err
 				}
-				fmt.Printf(">paragraph>%s>\n\n%v\n\n", b.GetType().String(), paragraph)
+				fmt.Printf(">paragraph>%s>\n\n%v\n\n", blockType, paragraph)
 				// get lines
-				lines = append(lines, paragraph.markdown)
+				addLine(paragraph.markdown, MdTypePara, 0)
 
 			case "bulleted_list_item":
 				paragraph, err := cms.parseBulletedListItemBlock(b)
@@ -67,9 +90,9 @@ func (cms *Notion2Markdown) convertPageToMarkdown(pageId string, outputDirectory
 					fmt.Printf("error: %v\n", err)
 					return err
 				}
-				fmt.Printf(">bulleted_list>%s>\n\n%v\n\n", b.GetType().String(), paragraph)
+				fmt.Printf(">bulleted_list>%s>\n\n%v\n\n", blockType, paragraph)
 				// get lines
-				lines = append(lines, paragraph.markdown)
+				addLine(paragraph.markdown, MdTypeListItem, 0)
 
 			case "heading_1":
 				paragraph, err := cms.parseParagraphHeading1(b)
@@ -77,9 +100,9 @@ func (cms *Notion2Markdown) convertPageToMarkdown(pageId string, outputDirectory
 					fmt.Printf("error: %v\n", err)
 					return err
 				}
-				fmt.Printf(">heading 1>%s>\n\n%v\n\n", b.GetType().String(), paragraph)
+				fmt.Printf(">heading 1>%s>\n\n%v\n\n", blockType, paragraph)
 				// get lines
-				lines = append(lines, paragraph.markdown)
+				addLine(paragraph.markdown, MdTypeHeader, 1)
 
 			case "heading_2":
 				paragraph, err := cms.parseParagraphHeading2(b)
@@ -87,9 +110,9 @@ func (cms *Notion2Markdown) convertPageToMarkdown(pageId string, outputDirectory
 					fmt.Printf("error: %v\n", err)
 					return err
 				}
-				fmt.Printf(">heading 2>%s>\n\n%v\n\n", b.GetType().String(), paragraph)
+				fmt.Printf(">heading 2>%s>\n\n%v\n\n", blockType, paragraph)
 				// get lines
-				lines = append(lines, paragraph.markdown)
+				addLine(paragraph.markdown, MdTypeHeader, 2)
 
 			case "code":
 				paragraph, err := cms.parseCode(b)
@@ -97,9 +120,9 @@ func (cms *Notion2Markdown) convertPageToMarkdown(pageId string, outputDirectory
 					fmt.Printf("error: %v\n", err)
 					return err
 				}
-				fmt.Printf(">paragraph>%s>\n\n%v\n\n", b.GetType().String(), paragraph)
+				fmt.Printf(">paragraph>%s>\n\n%v\n\n", blockType, paragraph)
 				// get lines
-				lines = append(lines, paragraph.markdown)
+				addLine(paragraph.markdown, MdTypeCode, 0)
 
 			case "image":
 				imagesCount++
@@ -108,9 +131,9 @@ func (cms *Notion2Markdown) convertPageToMarkdown(pageId string, outputDirectory
 					fmt.Printf("error: %v\n", err)
 					return err
 				}
-				fmt.Printf(">paragraph (image)>%s>\n\n%v\n\n", b.GetType().String(), paragraph)
+				fmt.Printf(">paragraph (image)>%s>\n\n%v\n\n", blockType, paragraph)
 				// get lines
-				lines = append(lines, paragraph.markdown)
+				addLine(paragraph.markdown, MdTypeImage, 0)
 
 			default:
 				blockData, err := json.Marshal(b)
@@ -118,8 +141,8 @@ func (cms *Notion2Markdown) convertPageToMarkdown(pageId string, outputDirectory
 					fmt.Printf("error: %v\n", err)
 					return err
 				}
-				fmt.Printf("blockData:%s \n\n%s\n\n", b.GetType().String(), string(blockData))
-				return fmt.Errorf("block type parsing not implemented for:%s", b.GetType().String())
+				fmt.Printf("blockData:%s \n\n%s\n\n", blockType, string(blockData))
+				return fmt.Errorf("block type parsing not implemented for:%s", blockType)
 			}
 		}
 		return nil
@@ -132,7 +155,7 @@ func (cms *Notion2Markdown) convertPageToMarkdown(pageId string, outputDirectory
 	fmt.Printf(">metaData>%#v\n", metaData)
 
 	// generate file
-	err = cms.writeMarkdownFile(outputDirectory, metaData, lines)
+	err = cms.writeMarkdownFile(outputDirectory, metaData, mdBlocks)
 	if err != nil {
 		return err
 	}
