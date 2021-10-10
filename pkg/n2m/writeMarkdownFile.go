@@ -22,16 +22,20 @@ func (cms *Notion2Markdown) writeMarkdownFile(outputDirectory string, metaData *
 	f.WriteString("---\n")
 	f.WriteString(fmt.Sprintf("title: %s\n", metaData.Title))
 	f.WriteString(fmt.Sprintf("slug: %s\n", metaData.Slug))
-	f.WriteString(fmt.Sprintf("date: %s\n", metaData.Date.Format("2006/01/02")))
-	f.WriteString("tags: ")
-	for ix, t := range metaData.Tags {
-		if ix > 0 {
-			f.WriteString(", ")
+	f.WriteString(fmt.Sprintf("date: %s\n", metaData.Date.Format("2006-01-02")))
+	if len(metaData.Tags) > 0 {
+		f.WriteString("tags:\n")
+		for _, t := range metaData.Tags {
+			f.WriteString(fmt.Sprintf("  - %s\n", t))
 		}
-		f.WriteString(t)
 	}
-	f.WriteString("\n")
-	f.WriteString(fmt.Sprintf("excerpt: %s\n", metaData.Excerpt))
+	f.WriteString(fmt.Sprintf("description: %s\n", metaData.Description))
+	f.WriteString("toc: true\n")
+	if metaData.IsDraft {
+		f.WriteString("draft: true\n")
+	} else {
+		f.WriteString("draft: false\n")
+	}
 	f.WriteString("---\n\n")
 	for _, line := range lines {
 		f.WriteString(line)

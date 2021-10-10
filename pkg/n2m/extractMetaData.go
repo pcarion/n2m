@@ -14,12 +14,12 @@ import (
 // https://developers.notion.com/reference/post-database-query
 
 type MetaDataInformation struct {
-	Title   string
-	Slug    string
-	Date    time.Time
-	Tags    []string
-	Excerpt string
-	IsDraft bool
+	Title       string
+	Slug        string
+	Date        time.Time
+	Tags        []string
+	Description string
+	IsDraft     bool
 }
 
 func (cms *Notion2Markdown) extractMetaData(block notionapi.Block, pageTitle string) (*MetaDataInformation, error) {
@@ -70,7 +70,7 @@ func (cms *Notion2Markdown) extractMetaData(block notionapi.Block, pageTitle str
 	for propName, propValue := range props {
 		switch strings.ToLower(propName) {
 		case "excerpt":
-			medataData.Excerpt = propValue
+			medataData.Description = propValue
 		case "slug":
 			medataData.Slug = propValue
 		case "date":
