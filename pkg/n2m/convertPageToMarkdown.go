@@ -22,7 +22,7 @@ func getPageTitle(page *notionapi.Page) string {
 	return ""
 }
 
-func (cms *Notion2Markdown) ConvertPageToMarkdown(pageId string, outputDirectory string) error {
+func (cms *Notion2Markdown) convertPageToMarkdown(pageId string, outputDirectory string) error {
 	var metaData *MetaDataInformation
 	var pageTitle = ""
 	var lines []string = make([]string, 0, 20)
@@ -68,6 +68,16 @@ func (cms *Notion2Markdown) ConvertPageToMarkdown(pageId string, outputDirectory
 					return err
 				}
 				fmt.Printf(">paragraph (bulleted)>%s>\n\n%v\n\n", b.GetType().String(), paragraph)
+				// get lines
+				lines = append(lines, paragraph.markdown)
+
+			case "heading_1":
+				paragraph, err := cms.parseParagraphHeading1(b)
+				if err != nil {
+					fmt.Printf("error: %v\n", err)
+					return err
+				}
+				fmt.Printf(">paragraph>%s>\n\n%v\n\n", b.GetType().String(), paragraph)
 				// get lines
 				lines = append(lines, paragraph.markdown)
 

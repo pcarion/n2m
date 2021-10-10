@@ -25,3 +25,12 @@ func (cms *Notion2Markdown) parseBulletedListItemBlock(block notionapi.Block) (*
 		markdown: "* " + md,
 	}, nil
 }
+
+func (cms *Notion2Markdown) parseParagraphHeading1(block notionapi.Block) (*MarkdownParagraph, error) {
+	headingBlock := block.(*notionapi.Heading1Block)
+
+	md := cms.mdFromRichTexts(headingBlock.Heading1.Text)
+	return &MarkdownParagraph{
+		markdown: "#" + md,
+	}, nil
+}
