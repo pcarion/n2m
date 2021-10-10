@@ -81,6 +81,16 @@ func (cms *Notion2Markdown) convertPageToMarkdown(pageId string, outputDirectory
 				// get lines
 				lines = append(lines, paragraph.markdown)
 
+			case "heading_2":
+				paragraph, err := cms.parseParagraphHeading2(b)
+				if err != nil {
+					fmt.Printf("error: %v\n", err)
+					return err
+				}
+				fmt.Printf(">heading 2>%s>\n\n%v\n\n", b.GetType().String(), paragraph)
+				// get lines
+				lines = append(lines, paragraph.markdown)
+
 			case "code":
 				paragraph, err := cms.parseCode(b)
 				if err != nil {
