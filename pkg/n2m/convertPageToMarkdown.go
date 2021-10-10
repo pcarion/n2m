@@ -67,12 +67,22 @@ func (cms *Notion2Markdown) convertPageToMarkdown(pageId string, outputDirectory
 					fmt.Printf("error: %v\n", err)
 					return err
 				}
-				fmt.Printf(">paragraph (bulleted)>%s>\n\n%v\n\n", b.GetType().String(), paragraph)
+				fmt.Printf(">bulleted_list>%s>\n\n%v\n\n", b.GetType().String(), paragraph)
 				// get lines
 				lines = append(lines, paragraph.markdown)
 
 			case "heading_1":
 				paragraph, err := cms.parseParagraphHeading1(b)
+				if err != nil {
+					fmt.Printf("error: %v\n", err)
+					return err
+				}
+				fmt.Printf(">heading 1>%s>\n\n%v\n\n", b.GetType().String(), paragraph)
+				// get lines
+				lines = append(lines, paragraph.markdown)
+
+			case "code":
+				paragraph, err := cms.parseCode(b)
 				if err != nil {
 					fmt.Printf("error: %v\n", err)
 					return err
