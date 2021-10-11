@@ -23,6 +23,11 @@ type MarkdownBlock struct {
 	markdown string
 }
 
+type ImageDescription struct {
+	imageUrl           string
+	imageLocalFileName string
+}
+
 func getPageTitle(page *notionapi.Page) string {
 	for _, prop := range page.Properties {
 		if prop.GetType() == "title" {
@@ -41,6 +46,7 @@ func (cms *Notion2Markdown) convertPageToMarkdown(pageId string, outputDirectory
 	var metaData *MetaDataInformation
 	var pageTitle = ""
 	var mdBlocks []MarkdownBlock = make([]MarkdownBlock, 0, 20)
+	var mdImages []ImageDescription = make([]ImageDescription, 0, 5)
 	var err error
 	var imagesCount = 0
 
@@ -135,6 +141,12 @@ func (cms *Notion2Markdown) convertPageToMarkdown(pageId string, outputDirectory
 				// get lines
 				addLine(paragraph.markdown, MdTypeImage, 0)
 
+				// store image
+				mdImages = append(mdImages, ImageDescription{
+					imageUrl:           paragraph.imageToDownloadUrl,
+					imageLocalFileName: paragraph.imageLocalFileName,
+				})
+
 			default:
 				blockData, err := json.Marshal(b)
 				if err != nil {
@@ -159,6 +171,8 @@ func (cms *Notion2Markdown) convertPageToMarkdown(pageId string, outputDirectory
 	if err != nil {
 		return err
 	}
+
+	downloadImages(outputDirectory, metaData.Slug, mdImages)
 
 	return nil
 }

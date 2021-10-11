@@ -1,6 +1,10 @@
 # n2m
 go implementation of the notion API
 
+notion API:
+https://github.com/jomei/notionapi
+
+
 List of blocks for API:
 
 https://developers.notion.com/reference/block

@@ -40,6 +40,7 @@ func (cms *Notion2Markdown) parseImageBlock(block notionapi.Block, slug string, 
 		return nil, err
 	}
 	imageLocalFileName := fmt.Sprintf("%s-%03d%s", slug, imageIndex, extension)
+
 	return &MarkdownImage{
 		imageToDownloadUrl: image.File.URL,
 		imageLocalFileName: imageLocalFileName,
