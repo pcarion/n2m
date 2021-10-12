@@ -16,6 +16,8 @@ type JsonConfig struct {
 func parseJSONConfig() (*JsonConfig, error) {
 	content, err := os.ReadFile("n2m.json")
 	if err != nil {
+		pwd, _ := os.Getwd()
+		fmt.Printf("Cannot read config file n2m.json in %s\n", pwd)
 		return nil, err
 	}
 	config := JsonConfig{}

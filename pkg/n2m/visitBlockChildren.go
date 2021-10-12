@@ -21,16 +21,17 @@ func (cms *Notion2Markdown) visitBlockChildren(pageId string, visitor BlockChild
 		if err != nil {
 			returnError = err
 			doContinueLoop = false
-		}
-		if block.HasMore {
-			pagination.StartCursor = notionapi.Cursor(block.NextCursor)
 		} else {
-			doContinueLoop = false
-		}
-		err = visitor(block.Results)
-		if err != nil {
-			returnError = err
-			doContinueLoop = false
+			if block.HasMore {
+				pagination.StartCursor = notionapi.Cursor(block.NextCursor)
+			} else {
+				doContinueLoop = false
+			}
+			err = visitor(block.Results)
+			if err != nil {
+				returnError = err
+				doContinueLoop = false
+			}
 		}
 	}
 	return returnError
