@@ -30,7 +30,7 @@ func (cms *Notion2Markdown) GenerateMardown(rootPageId string, outputDirectory s
 
 	for ix, page := range pages {
 		// TODO: test to limit
-		if ix != 0 {
+		if ix != 2 {
 			continue
 		}
 		err = cms.convertPageToMarkdown(page.Id, outputDirectory)
