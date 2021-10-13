@@ -6,11 +6,6 @@ import (
 	"github.com/jomei/notionapi"
 )
 
-type MarkdownCode struct {
-	language string
-	markdown string
-}
-
 func (cms *Notion2Markdown) parseCode(block notionapi.Block) (*MarkdownCode, error) {
 	codeBlock := block.(*notionapi.CodeBlock)
 

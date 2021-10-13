@@ -13,15 +13,6 @@ import (
 // references:
 // https://developers.notion.com/reference/post-database-query
 
-type MetaDataInformation struct {
-	Title       string
-	Slug        string
-	Date        time.Time
-	Tags        []string
-	Description string
-	IsDraft     bool
-}
-
 func (cms *Notion2Markdown) extractMetaData(block notionapi.Block, pageTitle string) (*MetaDataInformation, error) {
 	childDatabase := block.(*notionapi.ChildDatabaseBlock)
 	database, err := cms.client.Database.Query(context.Background(), notionapi.DatabaseID(childDatabase.ID), nil)

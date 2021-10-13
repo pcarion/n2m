@@ -6,9 +6,14 @@ import (
 	"github.com/jomei/notionapi"
 )
 
-type BlockChildrenVisitor func([]notionapi.Block) error
+type withChidren struct {
+	hasChildren bool
+	blockID     string
+}
 
-func (cms *Notion2Markdown) visitBlockChildren(pageId string, visitor BlockChildrenVisitor) error {
+type BlockVisitor func(notionapi.Block, int) error
+
+func (cms *Notion2Markdown) visitBlockChildren(blockId string, visitor BlockVisitor, level int) error {
 	var pagination = notionapi.Pagination{
 		PageSize: 10,
 	}
@@ -17,20 +22,58 @@ func (cms *Notion2Markdown) visitBlockChildren(pageId string, visitor BlockChild
 
 	for doContinueLoop {
 
-		block, err := cms.client.Block.GetChildren(context.Background(), notionapi.BlockID(pageId), &pagination)
+		children, err := cms.client.Block.GetChildren(context.Background(), notionapi.BlockID(blockId), &pagination)
 		if err != nil {
 			returnError = err
 			doContinueLoop = false
 		} else {
-			if block.HasMore {
-				pagination.StartCursor = notionapi.Cursor(block.NextCursor)
+			if children.HasMore {
+				pagination.StartCursor = notionapi.Cursor(children.NextCursor)
 			} else {
 				doContinueLoop = false
 			}
-			err = visitor(block.Results)
-			if err != nil {
-				returnError = err
-				doContinueLoop = false
+			for _, block := range children.Results {
+				err = visitor(block, level)
+				if err != nil {
+					returnError = err
+					doContinueLoop = false
+				} else {
+					var withBlockChildren *withChidren = nil
+					if block.GetType().String() == "paragraph" {
+						paragraphBlock := block.(*notionapi.ParagraphBlock)
+						withBlockChildren = &withChidren{
+							hasChildren: paragraphBlock.HasChildren,
+							blockID:     paragraphBlock.ID.String(),
+						}
+					} else if block.GetType().String() == "bulleted_list_item" {
+						bulletedListItemBlock := block.(*notionapi.BulletedListItemBlock)
+						withBlockChildren = &withChidren{
+							hasChildren: bulletedListItemBlock.HasChildren,
+							blockID:     bulletedListItemBlock.ID.String(),
+						}
+					} else if block.GetType().String() == "heading_1" {
+						headingBlock := block.(*notionapi.Heading1Block)
+						withBlockChildren = &withChidren{
+							hasChildren: headingBlock.HasChildren,
+							blockID:     headingBlock.ID.String(),
+						}
+					} else if block.GetType().String() == "heading_2" {
+						headingBlock := block.(*notionapi.Heading2Block)
+						withBlockChildren = &withChidren{
+							hasChildren: headingBlock.HasChildren,
+							blockID:     headingBlock.ID.String(),
+						}
+					}
+
+					if withBlockChildren != nil {
+						// we iterate through children blocks
+						err = cms.visitBlockChildren(withBlockChildren.blockID, visitor, level+1)
+						if err != nil {
+							returnError = err
+							doContinueLoop = false
+						}
+					}
+				}
 			}
 		}
 	}

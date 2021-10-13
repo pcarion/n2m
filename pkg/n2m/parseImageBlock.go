@@ -8,13 +8,6 @@ import (
 	"github.com/jomei/notionapi"
 )
 
-type MarkdownImage struct {
-	caption            string
-	imageToDownloadUrl string
-	imageLocalFileName string
-	markdown           string
-}
-
 func extractExtensionFromFileUrl(urlToParse string) (string, error) {
 	u, err := url.Parse(urlToParse)
 	if err != nil {
