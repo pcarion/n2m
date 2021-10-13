@@ -98,7 +98,7 @@ func mkVisitor(context *VisitorContext) BlockVisitor {
 			addLine(paragraph.markdown, MdTypePara, 0)
 
 		case "bulleted_list_item":
-			paragraph, err := context.cms.parseBulletedListItemBlock(block)
+			paragraph, err := context.cms.parseBulletedListItemBlock(block, level)
 			if err != nil {
 				fmt.Printf("error: %v\n", err)
 				return err

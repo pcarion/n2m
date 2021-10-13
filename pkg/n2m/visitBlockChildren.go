@@ -38,6 +38,7 @@ func (cms *Notion2Markdown) visitBlockChildren(blockId string, visitor BlockVisi
 					returnError = err
 					doContinueLoop = false
 				} else {
+					// check if there are children nodes
 					var withBlockChildren *withChidren = nil
 					if block.GetType().String() == "paragraph" {
 						paragraphBlock := block.(*notionapi.ParagraphBlock)

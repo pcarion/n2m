@@ -1,6 +1,8 @@
 package n2m
 
 import (
+	"strings"
+
 	"github.com/jomei/notionapi"
 )
 
@@ -13,13 +15,14 @@ func (cms *Notion2Markdown) parseParagraphBlock(block notionapi.Block) (*Markdow
 	}, nil
 }
 
-func (cms *Notion2Markdown) parseBulletedListItemBlock(block notionapi.Block) (*MarkdownParagraph, error) {
+func (cms *Notion2Markdown) parseBulletedListItemBlock(block notionapi.Block, level int) (*MarkdownParagraph, error) {
 	bulletedListItemBlock := block.(*notionapi.BulletedListItemBlock)
+	var prefix = strings.Repeat("  ", level)
 
 	listItem := bulletedListItemBlock.BulletedListItem
 	md := cms.mdFromRichTexts(listItem.Text)
 	return &MarkdownParagraph{
-		markdown: "* " + md,
+		markdown: prefix + "* " + md,
 	}, nil
 }
 
