@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"os"
 
@@ -26,6 +27,13 @@ func parseJSONConfig() (*JsonConfig, error) {
 }
 
 func main() {
+	// cli flags
+	var debugMode bool
+	var pageIndex int
+	flag.BoolVar(&debugMode, "debug", false, "debug mode")
+	flag.IntVar(&pageIndex, "page", -1, "the page index to generate")
+	flag.Parse()
+
 	notionIntegrationToken := os.Getenv("NOTION_INTEGRATION_TOKEN")
 
 	if notionIntegrationToken == "" {
@@ -39,13 +47,13 @@ func main() {
 		os.Exit(1)
 	}
 
-	cms, err := n2m.NewNotionToMarkdown(notionIntegrationToken)
+	cms, err := n2m.NewNotionToMarkdown(notionIntegrationToken, debugMode)
 	if err != nil {
 		fmt.Printf("error: %v\n", err)
 		os.Exit(1)
 	}
 
-	err = cms.GenerateMardown(config.RootPageId, config.OutputDirectory)
+	err = cms.GenerateMardown(config.RootPageId, config.OutputDirectory, pageIndex)
 	if err != nil {
 		fmt.Printf("error: %v\n", err)
 		os.Exit(1)

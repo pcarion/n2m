@@ -59,7 +59,7 @@ func (cms *Notion2Markdown) extractMetaData(block notionapi.Block, pageTitle str
 	// check those properties
 	for propName, propValue := range props {
 		switch strings.ToLower(propName) {
-		case "excerpt":
+		case "description":
 			medataData.Description = propValue
 		case "slug":
 			medataData.Slug = propValue
