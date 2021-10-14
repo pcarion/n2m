@@ -25,7 +25,6 @@ func LogAsJson(b interface{}, what string) {
 }
 
 func downloadImage(imgUrl string, outFileName string) error {
-	fmt.Printf("@@ downloadImage url=%s, path=%s\n", imgUrl, outFileName)
 	resp, err := http.Get(imgUrl)
 	if err != nil {
 		return fmt.Errorf("couldn't download image: %s", err)

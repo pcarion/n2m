@@ -49,7 +49,9 @@ func (cms *Notion2Markdown) convertPageToMarkdown(pageId string, outputDirectory
 		fmt.Printf("error: %v\n", err)
 		return err
 	}
-	fmt.Printf(">metaData>%#v\n", visitorContext.metaData)
+	if cms.debugMode {
+		fmt.Printf(">metaData>%#v\n", visitorContext.metaData)
+	}
 
 	// generate file
 	err = cms.writeMarkdownFile(outputDirectory, visitorContext.metaData, visitorContext.mdBlocks)
@@ -76,6 +78,7 @@ func mkVisitor(context *VisitorContext) BlockVisitor {
 	var visitorFunction = func(block notionapi.Block, level int) error {
 		// https://developers.notion.com/changelog/api-support-for-code-blocks-and-inline-databases
 		var blockType = block.GetType().String()
+		var debugMode = context.cms.debugMode
 
 		switch blockType {
 		case "child_database":
@@ -85,7 +88,9 @@ func mkVisitor(context *VisitorContext) BlockVisitor {
 				fmt.Printf("error: %v\n", err)
 				return err
 			}
-			fmt.Printf(">metaData>%#v\n", context.metaData)
+			if debugMode {
+				fmt.Printf(">metaData>%#v\n", context.metaData)
+			}
 
 		case "paragraph":
 			paragraph, err := context.cms.parseParagraphBlock(block)
@@ -93,7 +98,9 @@ func mkVisitor(context *VisitorContext) BlockVisitor {
 				fmt.Printf("error: %v\n", err)
 				return err
 			}
-			fmt.Printf(">paragraph>%s>\n\n%v\n\n", blockType, paragraph)
+			if debugMode {
+				fmt.Printf(">paragraph>%s>\n\n%v\n\n", blockType, paragraph)
+			}
 			// get lines
 			addLine(paragraph.markdown, MdTypePara, 0)
 
@@ -103,11 +110,11 @@ func mkVisitor(context *VisitorContext) BlockVisitor {
 				fmt.Printf("error: %v\n", err)
 				return err
 			}
-			fmt.Printf(">bulleted_list>%s>\n\n%v\n\n", blockType, paragraph)
+			if debugMode {
+				fmt.Printf(">bulleted_list>%s>\n\n%v\n\n", blockType, paragraph)
+			}
 			// get lines
 			addLine(paragraph.markdown, MdTypeListItem, 0)
-
-			LogAsJson(block, "@@ bulleted_list_item")
 
 		case "heading_1":
 			paragraph, err := context.cms.parseParagraphHeading1(block)
@@ -115,7 +122,9 @@ func mkVisitor(context *VisitorContext) BlockVisitor {
 				fmt.Printf("error: %v\n", err)
 				return err
 			}
-			fmt.Printf(">heading 1>%s>\n\n%v\n\n", blockType, paragraph)
+			if debugMode {
+				fmt.Printf(">heading 1>%s>\n\n%v\n\n", blockType, paragraph)
+			}
 			// get lines
 			addLine(paragraph.markdown, MdTypeHeader, 1)
 
@@ -125,7 +134,21 @@ func mkVisitor(context *VisitorContext) BlockVisitor {
 				fmt.Printf("error: %v\n", err)
 				return err
 			}
-			fmt.Printf(">heading 2>%s>\n\n%v\n\n", blockType, paragraph)
+			if debugMode {
+				fmt.Printf(">heading 2>%s>\n\n%v\n\n", blockType, paragraph)
+			}
+			// get lines
+			addLine(paragraph.markdown, MdTypeHeader, 2)
+
+		case "heading_3":
+			paragraph, err := context.cms.parseParagraphHeading3(block)
+			if err != nil {
+				fmt.Printf("error: %v\n", err)
+				return err
+			}
+			if debugMode {
+				fmt.Printf(">heading 2>%s>\n\n%v\n\n", blockType, paragraph)
+			}
 			// get lines
 			addLine(paragraph.markdown, MdTypeHeader, 2)
 
@@ -135,18 +158,22 @@ func mkVisitor(context *VisitorContext) BlockVisitor {
 				fmt.Printf("error: %v\n", err)
 				return err
 			}
-			fmt.Printf(">paragraph>%s>\n\n%v\n\n", blockType, paragraph)
+			if debugMode {
+				fmt.Printf(">paragraph>%s>\n\n%v\n\n", blockType, paragraph)
+			}
 			// get lines
 			addLine(paragraph.markdown, MdTypeCode, 0)
 
 		case "image":
 			context.imagesCount++
-			paragraph, err := context.cms.parseImageBlock(block, context.metaData.Slug, context.imagesCount)
+			paragraph, err := context.cms.parseImageBlock(block, context.metaData.Slug, context.imagesCount, debugMode)
 			if err != nil {
 				fmt.Printf("error: %v\n", err)
 				return err
 			}
-			fmt.Printf(">paragraph (image)>%s>\n\n%v\n\n", blockType, paragraph)
+			if debugMode {
+				fmt.Printf(">paragraph (image)>%s>\n\n%v\n\n", blockType, paragraph)
+			}
 			// get lines
 			addLine(paragraph.markdown, MdTypeImage, 0)
 

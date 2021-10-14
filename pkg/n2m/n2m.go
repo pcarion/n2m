@@ -30,6 +30,7 @@ func (cms *Notion2Markdown) GenerateMardown(rootPageId string, outputDirectory s
 		return err
 	}
 
+	// loop through all the pages
 	for ix, page := range pages {
 		// test if we limit to one page
 		if pageIndex >= 0 && ix != pageIndex {

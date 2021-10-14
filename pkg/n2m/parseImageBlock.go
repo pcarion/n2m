@@ -17,13 +17,15 @@ func extractExtensionFromFileUrl(urlToParse string) (string, error) {
 	return extension, nil
 }
 
-func (cms *Notion2Markdown) parseImageBlock(block notionapi.Block, slug string, imageIndex int) (*MarkdownImage, error) {
+func (cms *Notion2Markdown) parseImageBlock(block notionapi.Block, slug string, imageIndex int, debugMode bool) (*MarkdownImage, error) {
 	imageBlock := block.(*notionapi.ImageBlock)
 	image := imageBlock.Image
 
 	// TODO: handle external URLs
-	fmt.Printf(">image block>%#v\n", imageBlock)
-	fmt.Printf(">image URL>\n%s\n", image.File.URL)
+	if debugMode {
+		fmt.Printf(">image block>%#v\n", imageBlock)
+		fmt.Printf(">image URL>\n%s\n", image.File.URL)
+	}
 	var caption = ""
 	if len(imageBlock.Image.Caption) > 0 {
 		caption = imageBlock.Image.Caption[0].PlainText

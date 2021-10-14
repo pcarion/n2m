@@ -43,3 +43,12 @@ func (cms *Notion2Markdown) parseParagraphHeading2(block notionapi.Block) (*Mark
 		markdown: "## " + md,
 	}, nil
 }
+
+func (cms *Notion2Markdown) parseParagraphHeading3(block notionapi.Block) (*MarkdownParagraph, error) {
+	headingBlock := block.(*notionapi.Heading3Block)
+
+	md := cms.mdFromRichTexts(headingBlock.Heading3.Text)
+	return &MarkdownParagraph{
+		markdown: "## " + md,
+	}, nil
+}

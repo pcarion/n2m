@@ -64,6 +64,12 @@ func (cms *Notion2Markdown) visitBlockChildren(blockId string, visitor BlockVisi
 							hasChildren: headingBlock.HasChildren,
 							blockID:     headingBlock.ID.String(),
 						}
+					} else if block.GetType().String() == "heading_3" {
+						headingBlock := block.(*notionapi.Heading3Block)
+						withBlockChildren = &withChidren{
+							hasChildren: headingBlock.HasChildren,
+							blockID:     headingBlock.ID.String(),
+						}
 					}
 
 					if withBlockChildren != nil {
