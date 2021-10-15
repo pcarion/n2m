@@ -8,10 +8,11 @@ import (
 
 func (cms *Notion2Markdown) parseCode(block notionapi.Block) (*MarkdownCode, error) {
 	codeBlock := block.(*notionapi.CodeBlock)
+	language := codeBlock.Code.Language
 
 	md := cms.mdFromRichTexts(codeBlock.Code.Text)
 	return &MarkdownCode{
-		markdown: fmt.Sprintf("```\n%s\n```", md),
-		language: codeBlock.Code.Language,
+		markdown: fmt.Sprintf("```%s\n%s\n```", language, md),
+		language: language,
 	}, nil
 }
