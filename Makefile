@@ -3,3 +3,6 @@ build:
 
 run:
 	go run cmd/n2m/main.go
+
+install: build
+	cp bin/n2m /usr/local/bin
