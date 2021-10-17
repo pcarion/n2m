@@ -82,7 +82,7 @@ func mkVisitor(context *VisitorContext) BlockVisitor {
 		var debugMode = context.cms.debugMode
 
 		switch blockType {
-		case "child_database":
+		case notionapi.BlockTypeChildDatabase.String():
 			// meta information
 			context.metaData, err = context.cms.extractMetaData(block, context.pageTitle)
 			if err != nil {
@@ -93,7 +93,7 @@ func mkVisitor(context *VisitorContext) BlockVisitor {
 				fmt.Printf(">metaData>%#v\n", context.metaData)
 			}
 
-		case "paragraph":
+		case notionapi.BlockTypeParagraph.String():
 			paragraph, err := context.cms.parseParagraphBlock(block)
 			if err != nil {
 				fmt.Printf("error: %v\n", err)
@@ -105,7 +105,7 @@ func mkVisitor(context *VisitorContext) BlockVisitor {
 			// get lines
 			addLine(paragraph.markdown, MdTypePara, 0)
 
-		case "bulleted_list_item":
+		case notionapi.BlockTypeBulletedListItem.String():
 			paragraph, err := context.cms.parseBulletedListItemBlock(block, level)
 			if err != nil {
 				fmt.Printf("error: %v\n", err)
@@ -117,7 +117,7 @@ func mkVisitor(context *VisitorContext) BlockVisitor {
 			// get lines
 			addLine(paragraph.markdown, MdTypeListItem, 0)
 
-		case "heading_1":
+		case notionapi.BlockTypeHeading1.String():
 			paragraph, err := context.cms.parseParagraphHeading1(block)
 			if err != nil {
 				fmt.Printf("error: %v\n", err)
@@ -129,7 +129,7 @@ func mkVisitor(context *VisitorContext) BlockVisitor {
 			// get lines
 			addLine(paragraph.markdown, MdTypeHeader, 1)
 
-		case "heading_2":
+		case notionapi.BlockTypeHeading2.String():
 			paragraph, err := context.cms.parseParagraphHeading2(block)
 			if err != nil {
 				fmt.Printf("error: %v\n", err)
@@ -141,7 +141,7 @@ func mkVisitor(context *VisitorContext) BlockVisitor {
 			// get lines
 			addLine(paragraph.markdown, MdTypeHeader, 2)
 
-		case "heading_3":
+		case notionapi.BlockTypeHeading3.String():
 			paragraph, err := context.cms.parseParagraphHeading3(block)
 			if err != nil {
 				fmt.Printf("error: %v\n", err)
@@ -153,7 +153,7 @@ func mkVisitor(context *VisitorContext) BlockVisitor {
 			// get lines
 			addLine(paragraph.markdown, MdTypeHeader, 2)
 
-		case "code":
+		case notionapi.BlockTypeCode.String():
 			paragraph, err := context.cms.parseCode(block)
 			if err != nil {
 				fmt.Printf("error: %v\n", err)
@@ -165,7 +165,7 @@ func mkVisitor(context *VisitorContext) BlockVisitor {
 			// get lines
 			addLine(paragraph.markdown, MdTypeCode, 0)
 
-		case "image":
+		case notionapi.BlockTypeImage.String():
 			context.imagesCount++
 			paragraph, err := context.cms.parseImageBlock(block, context.metaData.Slug, context.imagesCount, debugMode)
 			if err != nil {
@@ -186,6 +186,9 @@ func mkVisitor(context *VisitorContext) BlockVisitor {
 
 		case notionapi.BlockTypeTableOfContents.String():
 			context.metaData.HasToc = true
+
+		case notionapi.BlockTypeDivider.String():
+			// ignore
 
 		default:
 			blockData, err := json.Marshal(block)
