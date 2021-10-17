@@ -20,7 +20,7 @@ func (cms *Notion2Markdown) writeMarkdownFile(outputDirectory string, metaData *
 	}
 	defer f.Close()
 	f.WriteString("---\n")
-	f.WriteString(fmt.Sprintf("title: %s\n", metaData.Title))
+	f.WriteString(fmt.Sprintf("title: %q\n", metaData.Title))
 	f.WriteString(fmt.Sprintf("slug: %s\n", metaData.Slug))
 	f.WriteString(fmt.Sprintf("date: %s\n", metaData.Date.Format("2006-01-02")))
 	if len(metaData.Tags) > 0 {
@@ -40,6 +40,10 @@ func (cms *Notion2Markdown) writeMarkdownFile(outputDirectory string, metaData *
 	} else {
 		f.WriteString("draft: false\n")
 	}
+	f.WriteString("\n")
+	// notion meta information
+	f.WriteString(fmt.Sprintf("notionPageId: %s\n", metaData.NotionPageId))
+	f.WriteString(fmt.Sprintf("notionLastEditedTime: %s\n", metaData.NotionLastEditedTime))
 	f.WriteString("---\n\n")
 	for ix, block := range blocks {
 		f.WriteString(block.markdown)

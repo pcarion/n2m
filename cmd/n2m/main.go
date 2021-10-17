@@ -30,7 +30,9 @@ func main() {
 	// cli flags
 	var debugMode bool
 	var pageIndex int
+	var forceGeneration bool
 	flag.BoolVar(&debugMode, "debug", false, "debug mode")
+	flag.BoolVar(&forceGeneration, "force", false, "force generation (no last edit time check)")
 	flag.IntVar(&pageIndex, "page", -1, "the page index to generate")
 	flag.Parse()
 
@@ -47,7 +49,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	cms, err := n2m.NewNotionToMarkdown(notionIntegrationToken, debugMode)
+	cms, err := n2m.NewNotionToMarkdown(notionIntegrationToken, debugMode, forceGeneration)
 	if err != nil {
 		fmt.Printf("error: %v\n", err)
 		os.Exit(1)

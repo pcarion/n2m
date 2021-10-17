@@ -24,7 +24,7 @@ type ImageDescription struct {
 
 type VisitorContext struct {
 	metaData    *MetaDataInformation
-	pageTitle   string
+	page        *CmsPageDescription
 	mdBlocks    []MarkdownBlock
 	mdImages    []ImageDescription
 	imagesCount int
@@ -32,13 +32,15 @@ type VisitorContext struct {
 }
 
 type MetaDataInformation struct {
-	Title       string
-	Slug        string
-	Date        time.Time
-	Tags        []string
-	Description string
-	IsDraft     bool
-	HasToc      bool
+	Title                string
+	Slug                 string
+	Date                 time.Time
+	Tags                 []string
+	Description          string
+	IsDraft              bool
+	HasToc               bool
+	NotionPageId         string
+	NotionLastEditedTime string
 }
 
 type MarkdownParagraph struct {
@@ -55,4 +57,11 @@ type MarkdownImage struct {
 	imageToDownloadUrl string
 	imageLocalFileName string
 	markdown           string
+}
+
+type CmsPageDescription struct {
+	Id             string
+	Title          string
+	LastEditedTime string
+	Index          int
 }

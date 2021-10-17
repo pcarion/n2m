@@ -13,7 +13,7 @@ import (
 // references:
 // https://developers.notion.com/reference/post-database-query
 
-func (cms *Notion2Markdown) extractMetaData(block notionapi.Block, pageTitle string) (*MetaDataInformation, error) {
+func (cms *Notion2Markdown) extractMetaData(block notionapi.Block, page *CmsPageDescription) (*MetaDataInformation, error) {
 	childDatabase := block.(*notionapi.ChildDatabaseBlock)
 	database, err := cms.client.Database.Query(context.Background(), notionapi.DatabaseID(childDatabase.ID), nil)
 	if err != nil {
@@ -54,7 +54,9 @@ func (cms *Notion2Markdown) extractMetaData(block notionapi.Block, pageTitle str
 	}
 
 	var medataData = MetaDataInformation{
-		Title: pageTitle,
+		Title:                page.Title,
+		NotionPageId:         page.Id,
+		NotionLastEditedTime: page.LastEditedTime,
 	}
 	// check those properties
 	for propName, propValue := range props {

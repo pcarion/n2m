@@ -1,50 +1,29 @@
 package n2m
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 
 	"github.com/jomei/notionapi"
 )
 
-func getPageTitle(page *notionapi.Page) string {
-	for _, prop := range page.Properties {
-		if prop.GetType() == "title" {
-			titleProp := prop.(*notionapi.TitleProperty)
-			title := ""
-			for _, t := range titleProp.Title {
-				title += t.PlainText
-			}
-			return title
-		}
-	}
-	return ""
-}
-
-func (cms *Notion2Markdown) convertPageToMarkdown(pageId string, outputDirectory string) error {
+func (cms *Notion2Markdown) convertPageToMarkdown(pageInfo CmsPageDescription, outputDirectory string) error {
 
 	var err error
 
 	var visitorContext = VisitorContext{
 		metaData:    nil,
-		pageTitle:   "",
+		page:        &pageInfo,
 		mdBlocks:    make([]MarkdownBlock, 0, 20),
 		mdImages:    make([]ImageDescription, 0, 5),
 		imagesCount: 0,
 		cms:         cms,
 	}
 
-	page, err := cms.client.Page.Get(context.Background(), notionapi.PageID(pageId))
-	if err != nil {
-		return err
-	}
-	visitorContext.pageTitle = getPageTitle(page)
-
 	var visitorFunction = mkVisitor(&visitorContext)
 
-	fmt.Printf("ConvertPageToMarkdown: pageId=%s title=%s\n", pageId, visitorContext.pageTitle)
-	err = cms.visitBlockChildren(pageId, visitorFunction, 0)
+	fmt.Printf("[%03d]: pageId=%s title=%s\n", pageInfo.Index, pageInfo.Id, pageInfo.Title)
+	err = cms.visitBlockChildren(pageInfo.Id, visitorFunction, 0)
 	// test result of "visitor"
 	if err != nil {
 		fmt.Printf("error: %v\n", err)
@@ -84,7 +63,7 @@ func mkVisitor(context *VisitorContext) BlockVisitor {
 		switch blockType {
 		case notionapi.BlockTypeChildDatabase.String():
 			// meta information
-			context.metaData, err = context.cms.extractMetaData(block, context.pageTitle)
+			context.metaData, err = context.cms.extractMetaData(block, context.page)
 			if err != nil {
 				fmt.Printf("error: %v\n", err)
 				return err
