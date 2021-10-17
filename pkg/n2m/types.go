@@ -38,6 +38,7 @@ type MetaDataInformation struct {
 	Tags        []string
 	Description string
 	IsDraft     bool
+	HasToc      bool
 }
 
 type MarkdownParagraph struct {

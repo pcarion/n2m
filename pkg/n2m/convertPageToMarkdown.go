@@ -23,6 +23,7 @@ func getPageTitle(page *notionapi.Page) string {
 }
 
 func (cms *Notion2Markdown) convertPageToMarkdown(pageId string, outputDirectory string) error {
+
 	var err error
 
 	var visitorContext = VisitorContext{
@@ -182,6 +183,9 @@ func mkVisitor(context *VisitorContext) BlockVisitor {
 				imageUrl:           paragraph.imageToDownloadUrl,
 				imageLocalFileName: paragraph.imageLocalFileName,
 			})
+
+		case notionapi.BlockTypeTableOfContents.String():
+			context.metaData.HasToc = true
 
 		default:
 			blockData, err := json.Marshal(block)

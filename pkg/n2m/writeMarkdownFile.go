@@ -30,7 +30,11 @@ func (cms *Notion2Markdown) writeMarkdownFile(outputDirectory string, metaData *
 		}
 	}
 	f.WriteString(fmt.Sprintf("description: %s\n", metaData.Description))
-	f.WriteString("toc: true\n")
+	if metaData.HasToc {
+		f.WriteString("toc: true\n")
+	} else {
+		f.WriteString("toc: false\n")
+	}
 	if metaData.IsDraft {
 		f.WriteString("draft: true\n")
 	} else {
