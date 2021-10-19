@@ -64,4 +64,5 @@ type CmsPageDescription struct {
 	Title          string
 	LastEditedTime string
 	Index          int
+	Skip           bool
 }

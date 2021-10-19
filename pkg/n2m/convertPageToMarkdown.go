@@ -7,13 +7,13 @@ import (
 	"github.com/jomei/notionapi"
 )
 
-func (cms *Notion2Markdown) convertPageToMarkdown(pageInfo CmsPageDescription, outputDirectory string) error {
+func (cms *Notion2Markdown) convertPageToMarkdown(pageInfo *CmsPageDescription, outputDirectory string) error {
 
 	var err error
 
 	var visitorContext = VisitorContext{
 		metaData:    nil,
-		page:        &pageInfo,
+		page:        pageInfo,
 		mdBlocks:    make([]MarkdownBlock, 0, 20),
 		mdImages:    make([]ImageDescription, 0, 5),
 		imagesCount: 0,
@@ -22,7 +22,6 @@ func (cms *Notion2Markdown) convertPageToMarkdown(pageInfo CmsPageDescription, o
 
 	var visitorFunction = mkVisitor(&visitorContext)
 
-	fmt.Printf("[%03d]: pageId=%s title=%s\n", pageInfo.Index, pageInfo.Id, pageInfo.Title)
 	err = cms.visitBlockChildren(pageInfo.Id, visitorFunction, 0)
 	// test result of "visitor"
 	if err != nil {

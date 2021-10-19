@@ -6,8 +6,8 @@ import (
 	"github.com/jomei/notionapi"
 )
 
-func (cms *Notion2Markdown) extractListPages(pageId string) ([]CmsPageDescription, error) {
-	result := make([]CmsPageDescription, 0, 10)
+func (cms *Notion2Markdown) extractListPages(pageId string) ([]*CmsPageDescription, error) {
+	result := make([]*CmsPageDescription, 0, 10)
 	var index = 0
 
 	cms.visitBlockChildren(pageId, func(block notionapi.Block, level int) error {
@@ -19,7 +19,7 @@ func (cms *Notion2Markdown) extractListPages(pageId string) ([]CmsPageDescriptio
 			if childPage.LastEditedTime != nil {
 				lastEditedTime = childPage.LastEditedTime.Format(time.RFC3339)
 			}
-			result = append(result, CmsPageDescription{
+			result = append(result, &CmsPageDescription{
 				Id:             id,
 				Title:          title,
 				LastEditedTime: lastEditedTime,

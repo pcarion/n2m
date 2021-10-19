@@ -1,6 +1,8 @@
 package n2m
 
 import (
+	"fmt"
+
 	"github.com/jomei/notionapi"
 )
 
@@ -34,7 +36,10 @@ func (cms *Notion2Markdown) GenerateMardown(rootPageId string, outputDirectory s
 
 	// check list of pages that actually need a refresh
 	if !cms.forceGeneration {
-		pages = cms.filterPageNeedRefresh(pages, outputDirectory)
+		err = cms.markPagesToSkip(pages, outputDirectory)
+		if err != nil {
+			return err
+		}
 	}
 
 	// loop through all the pages
@@ -43,6 +48,13 @@ func (cms *Notion2Markdown) GenerateMardown(rootPageId string, outputDirectory s
 		if pageIndex >= 0 && ix != pageIndex {
 			continue
 		}
+		// skip generation is marked as such
+		if page.Skip {
+			fmt.Printf("[%03d]: pageId=%s title=%s  *** SKIPPED ***\n", page.Index, page.Id, page.Title)
+			continue
+		}
+		fmt.Printf("[%03d]: pageId=%s title=%s\n", page.Index, page.Id, page.Title)
+
 		err = cms.convertPageToMarkdown(page, outputDirectory)
 		if err != nil {
 			return err
