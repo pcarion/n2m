@@ -21,15 +21,15 @@ func (cms *Notion2Markdown) writeMarkdownFile(outputDirectory string, metaData *
 	defer f.Close()
 	f.WriteString("---\n")
 	f.WriteString(fmt.Sprintf("title: %q\n", metaData.Title))
-	f.WriteString(fmt.Sprintf("slug: %s\n", metaData.Slug))
-	f.WriteString(fmt.Sprintf("date: %s\n", metaData.Date.Format("2006-01-02")))
+	f.WriteString(fmt.Sprintf("slug: %q\n", metaData.Slug))
+	f.WriteString(fmt.Sprintf("date: %q\n", metaData.Date.Format("2006-01-02")))
 	if len(metaData.Tags) > 0 {
 		f.WriteString("tags:\n")
 		for _, t := range metaData.Tags {
-			f.WriteString(fmt.Sprintf("  - %s\n", t))
+			f.WriteString(fmt.Sprintf("  - %q\n", t))
 		}
 	}
-	f.WriteString(fmt.Sprintf("description: %s\n", metaData.Description))
+	f.WriteString(fmt.Sprintf("description: %q\n", metaData.Description))
 	if metaData.HasToc {
 		f.WriteString("toc: true\n")
 	} else {
@@ -42,8 +42,8 @@ func (cms *Notion2Markdown) writeMarkdownFile(outputDirectory string, metaData *
 	}
 	f.WriteString("\n")
 	// notion meta information
-	f.WriteString(fmt.Sprintf("notionPageId: %s\n", metaData.NotionPageId))
-	f.WriteString(fmt.Sprintf("notionLastEditedTime: %s\n", metaData.NotionLastEditedTime))
+	f.WriteString(fmt.Sprintf("notionPageId: %q\n", metaData.NotionPageId))
+	f.WriteString(fmt.Sprintf("notionLastEditedTime: %q\n", metaData.NotionLastEditedTime))
 	f.WriteString("---\n\n")
 	for ix, block := range blocks {
 		f.WriteString(block.markdown)
