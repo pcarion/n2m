@@ -168,6 +168,9 @@ func mkVisitor(context *VisitorContext) BlockVisitor {
 		case notionapi.BlockTypeDivider.String():
 			// ignore
 
+		case notionapi.BlockTypeBookmark.String():
+			// ignore
+
 		default:
 			blockData, err := json.Marshal(block)
 			if err != nil {
